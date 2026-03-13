@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>PoG Mind Sync • 2. Imperium</title>
+
+    <!-- iOS Web App -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0f1c">
+    <meta name="apple-mobile-web-app-title" content="PoG Mind Sync">
+
+    <!-- Home Screen icon -->
+    <link rel="apple-touch-icon" href="mind-sync.png">
+
+    <style>
+        /* ── Google Fonts inlined as system-font fallback stack ── */
+        /* Orbitron-style: use a geometric monospace fallback if offline */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap');
+
+        /* ── Reset & base ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --cyan:      #22d3ee;
+            --cyan-dim:  #67e8f9;
+            --cyan-30:   rgba(34,211,238,0.3);
+            --cyan-20:   rgba(34,211,238,0.2);
+            --cyan-50:   rgba(34,211,238,0.5);
+            --emerald:   #34d399;
+            --zinc-950:  #09090b;
+            --zinc-900:  #18181b;
+            --zinc-500:  #71717a;
+            --zinc-400:  #a1a1aa;
+            --black80:   rgba(0,0,0,0.8);
+            --black50:   rgba(0,0,0,0.5);
+        }
+
+        html {
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #000000;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            position: fixed;
+            top: 0; left: 0;
+            padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+            /* Disable iOS rubber-band scroll */
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: auto;
+            touch-action: none;
+        }
+
+        /* ── Card ── */
+        .card {
+            max-width: 28rem;
+            width: 100%;
+            background: #000000;
+            border: none;
+            border-radius: 0;
+            overflow: hidden;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: var(--black80);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--cyan-30);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-left {}
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .logo-icon {
+            width: 2rem;
+            height: 2rem;
+            background: var(--cyan);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-weight: 700;
+            font-size: 1.25rem;
+            transform: rotate(12deg);
+            flex-shrink: 0;
+        }
+        .logo-title {
+            font-family: 'Orbitron', 'Courier New', monospace;
+            font-size: 1.875rem;
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            color: var(--cyan);
+        }
+        .header-sub {
+            color: var(--cyan);
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            margin-top: 0.25rem;
+        }
+        .header-right {
+            text-align: right;
+            font-size: 0.625rem;
+            color: var(--zinc-500);
+            line-height: 1.4;
+        }
+        .header-right span { color: #67e8f9; }
+
+        /* ── Body ── */
+        .body {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* ── Field group ── */
+        .field label {
+            display: block;
+            color: var(--cyan);
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        .input-wrap {
+            position: relative;
+        }
+        .input-wrap input {
+            width: 100%;
+            background: var(--zinc-900);
+            border: 1px solid var(--cyan-50);
+            border-radius: 1rem;
+            padding: 1.25rem 3.5rem 1.25rem 1.5rem;
+            font-size: 3rem;
+            font-family: 'Roboto Mono', 'Courier New', monospace;
+            font-weight: 700;
+            text-align: center;
+            color: white;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            touch-action: manipulation;
+        }
+        .input-wrap input::placeholder { color: var(--zinc-500); }
+        .input-wrap input:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 4px var(--cyan-20);
+        }
+        /* hide spinner arrows on number inputs */
+        .input-wrap input::-webkit-inner-spin-button,
+        .input-wrap input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .input-hint {
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.7rem;
+            color: var(--zinc-500);
+            pointer-events: none;
+        }
+
+        /* ── Divider ── */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--cyan-30), transparent);
+        }
+        .divider-icon {
+            color: var(--cyan);
+            font-size: 1.5rem;
+            transform: rotate(90deg);
+        }
+
+        /* ── Status ── */
+        #status {
+            text-align: center;
+            color: var(--emerald);
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .pulse-dot {
+            width: 0.5rem;
+            height: 0.5rem;
+            background: var(--emerald);
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50%       { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        /* ── Info box ── */
+        .info {
+            background: var(--black50);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            font-size: 0.8rem;
+            color: #3f3f46;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            background: var(--black80);
+            padding: 1rem 1.5rem;
+            text-align: center;
+            font-size: 0.625rem;
+            color: var(--zinc-500);
+            border-top: 1px solid rgba(34,211,238,0.12);
+        }
+
+        /* ── Glitch effect ── */
+        .glitch {
+            position: relative;
+            animation: glitch-skew 4s infinite linear alternate-reverse;
+        }
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+        }
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--cyan);
+            animation: glitch-anim 2s infinite linear alternate-reverse;
+            clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+        }
+        .glitch::after {
+            left: -2px;
+            text-shadow: 2px 0 var(--cyan-dim);
+            animation: glitch-anim2 1.5s infinite linear alternate-reverse;
+            clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+        }
+        .glow-cyan { text-shadow: 0 0 15px var(--cyan), 0 0 30px var(--cyan); }
+
+        @keyframes glitch-skew {
+            0%   { transform: skew(0deg); }
+            10%  { transform: skew(2deg); }
+            20%  { transform: skew(0deg); }
+        }
+        @keyframes glitch-anim {
+            0%   { transform: translate(0); }
+            20%  { transform: translate(-2px, 2px); }
+            40%  { transform: translate(-2px,-2px); }
+            60%  { transform: translate(2px, 2px); }
+            80%  { transform: translate(2px,-2px); }
+            100% { transform: translate(0); }
+        }
+        @keyframes glitch-anim2 {
+            0%   { transform: translate(0); }
+            25%  { transform: translate(2px, 0); }
+            50%  { transform: translate(-2px,0); }
+            75%  { transform: translate(2px, 0); }
+            100% { transform: translate(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-left">
+                <div class="header-logo">
+                    <div class="logo-icon">⟐</div>
+                    <h1 class="logo-title glow-cyan glitch" data-text="MIND SYNC">MIND SYNC</h1>
+                </div>
+                <p class="header-sub">PLAYER OF GAMES<br>2. Imperium</p>
+            </div>
+            <div class="header-right">
+                Folio Society<br>
+                <span>↔</span><br>
+                XTEInk X4
+            </div>
+        </div>
+
+        <!-- BODY -->
+        <div class="body">
+
+            <!-- FOLIO INPUT -->
+            <div class="field">
+                <label>Folio Society Print Page</label>
+                <div class="input-wrap">
+                    <input id="folio" type="number" inputmode="numeric" pattern="[0-9]*"
+                           min="113" max="268" placeholder="126" autocomplete="off">
+                    <span class="input-hint">page</span>
+                </div>
+            </div>
+
+            <!-- DIVIDER -->
+            <div class="divider">
+                <div class="divider-line"></div>
+                <div class="divider-icon">⟡</div>
+                <div class="divider-line"></div>
+            </div>
+
+            <!-- EBOOK INPUT -->
+            <div class="field">
+                <label>XTEInk X4 Section Page</label>
+                <div class="input-wrap">
+                    <input id="ebook" type="number" inputmode="numeric" pattern="[0-9]*"
+                           min="1" max="461" placeholder="59" autocomplete="off">
+                    <span class="input-hint">/461</span>
+                </div>
+            </div>
+
+            <!-- STATUS -->
+            <div id="status">
+                <div class="pulse-dot"></div>
+                SYNCED • PLAYER OF GAMES
+            </div>
+
+            <!-- INFO -->
+            <div class="info">
+                Calibrated to your Folio + XTEInk X4.<br>
+                Verified: 59 → 126 &nbsp;|&nbsp; 62 → 127 &nbsp;|&nbsp; 461 → 268
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            Culture Mind Link v1.1 • PLAYER OF GAMES
+        </div>
+    </div>
+
+    <script>
+        const folioInput = document.getElementById('folio');
+        const ebookInput = document.getElementById('ebook');
+        const statusEl   = document.getElementById('status');
+
+        function ebookToFolio(e) { return e ? Math.round(0.353 * e + 105) : ''; }
+        function folioToEbook(p) { return p ? Math.round((p - 105) * 2.83) : ''; }
+
+        function updateFromEbook() {
+            const v = parseFloat(ebookInput.value);
+            if (!isNaN(v)) folioInput.value = ebookToFolio(v);
+        }
+        function updateFromFolio() {
+            const v = parseFloat(folioInput.value);
+            if (!isNaN(v)) ebookInput.value = folioToEbook(v);
+        }
+
+        function flashSync() {
+            statusEl.innerHTML = '&#x2713; SYNCED';
+            setTimeout(() => {
+                statusEl.innerHTML = '<div class="pulse-dot"></div> SYNCED &bull; PLAYER OF GAMES';
+            }, 800);
+        }
+
+        ebookInput.addEventListener('input', () => { updateFromEbook(); flashSync(); });
+        folioInput.addEventListener('input', () => { updateFromFolio(); flashSync(); });
+
+        // Seed initial value
+        setTimeout(() => { ebookInput.value = 59; updateFromEbook(); }, 300);
+    </script>
+</body>
+</html>
